@@ -103,12 +103,15 @@ def name_search():
     # returns 404 after checking EVERYONE.
     return {"message": "Person not found"}, 404
 
+#count function to know the number of users.
 @app.route("/count")
 def count():
     try:
         return {"data count": len(data)}, 200
     except NameError:
         return {"message":"Data is not defined!"} , 500
+    
+#dynamic url's to get
 @app.route("/person/<uuid:id>")
 def find_by_uuid(id):
     # Iterate through the 'data' list to search for a person with a matching ID
@@ -119,6 +122,8 @@ def find_by_uuid(id):
             return person
     # If no matching person is found, return a JSON response with a message and a 404 Not Found status code
     return {"message": "person not found"}, 404
+
+#dynamic url's to delete
 @app.route("/person/<uuid:id>", methods=['DELETE'])
 def delete_by_uuid(id):
     # Iterate through the 'data' list to search for a person with a matching ID
@@ -131,6 +136,20 @@ def delete_by_uuid(id):
             return {"message": f"Person with ID {id} deleted"}, 200
     # If no matching person is found, return a JSON response with a message and a 404 Not Found status code
     return {"message": "person not found"}, 404
-        
+
+@app.route("/person", methods=['POST'])
+def add_by_uuid():
+    new_person = request.json
+    if not new_person:
+        return {"message": "Invalid input parameter"}, 422
+    # code to validate new_person ommited
+    try:
+        data.append(new_person)
+    except NameError:
+        return {"message": "data not defined"}, 500
+
+    return {"message": f"{new_person['id']}"}, 200
+
+
 if __name__ == "__main__":
     app.run(debug=True)
