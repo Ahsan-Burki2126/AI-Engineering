@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>AI Chatbot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Inter, system-ui, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: #0f172a;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 420px;
+            height: 90vh;
+            background: #020617;
+            border-radius: 14px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 16px;
+            border-bottom: 1px solid #1e293b;
+            text-align: center;
+            font-weight: 600;
+            color: #e5e7eb;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 12px 14px;
+            border-radius: 12px;
+            font-size: 14px;
+        }
+
+        .user {
+            align-self: flex-end;
+            background: #2563eb;
+            color: white;
+        }
+
+        .bot {
+            align-self: flex-start;
+            background: #1e293b;
+            color: #e5e7eb;
+        }
+
+        .chat-input {
+            padding: 12px;
+            border-top: 1px solid #1e293b;
+            display: flex;
+            gap: 8px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #1e293b;
+            background: #020617;
+            color: #e5e7eb;
+        }
+
+        .chat-input button {
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: none;
+            background: #2563eb;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="chat-container">
+        <div class="chat-header">🤖 The Burki Bot</div>
+
+        <div class="chat-messages" id="chatMessages"></div>
+
+        <div class="chat-input">
+            <input type="text" id="userInput" placeholder="Type your message..." />
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const chatMessages = document.getElementById("chatMessages");
+        const userInput = document.getElementById("userInput");
+
+        function addMessage(text, sender) {
+            const msg = document.createElement("div");
+            msg.classList.add("message", sender);
+            msg.innerText = text;
+            chatMessages.appendChild(msg);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            addMessage(message, "user");
+            userInput.value = "";
+
+            const response = await fetch("/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: message })
+            });
+
+            const data = await response.json();
+            addMessage(data.reply, "bot");
+        }
+    </script>
+
+</body>
+
+</html>
